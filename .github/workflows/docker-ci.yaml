@@ -1,9 +1,6 @@
-name: matching-service Docker Image Pipeline
+name: job-service Docker Image Pipeline
 
 on:
-  push:
-    branches:
-      - feature-branch
   pull_request:
     types:
       - closed
@@ -23,7 +20,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'build') }}
     uses: ./.github/workflows/docker_service_pipeline.yml
     with:
-      service_name: matching-service
+      service_name: job-service
       service_path: .
     secrets:
       GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
