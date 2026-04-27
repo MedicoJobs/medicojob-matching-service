@@ -90,7 +90,7 @@ jobs:
               ;;
           esac
 
-          if ! curl --fail --silent --show-error --connect-timeout 10 --max-time 20 "$SONAR_HOST_URL/api/system/status" >/dev/null; then
+          if ! curl --fail --silent --show-error --connect-timeout 10 --max-time 20 "$SONAR_HOST_URL/api/v2/analysis/version" >/dev/null; then
             echo "Cannot reach SonarQube from the GitHub runner at SONAR_HOST_URL."
             echo "Check that SONAR_HOST_URL is public/reachable from GitHub Actions, or run this job on a self-hosted runner with network access."
             exit 1
@@ -114,7 +114,6 @@ jobs:
         id: sonar-scan
         continue-on-error: true
         with:
-          scannerVersion: 5.0.2.4997
           projectBaseDir: ${{ inputs.service_path }}
           args: >-
             -Dsonar.projectKey=${{ inputs.sonar_project_key || vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
