@@ -90,7 +90,7 @@ jobs:
               ;;
           esac
 
-          if ! curl --fail --silent --show-error --connect-timeout 10 --max-time 20 "$SONAR_HOST_URL/api/v2/analysis/version" >/dev/null; then
+          if ! curl --fail --silent --show-error --connect-timeout 10 --max-time 20 "$SONAR_HOST_URL/api/system/status" >/dev/null; then
             echo "Cannot reach SonarQube from the GitHub runner at SONAR_HOST_URL."
             echo "Check that SONAR_HOST_URL is public/reachable from GitHub Actions, or run this job on a self-hosted runner with network access."
             exit 1
@@ -110,17 +110,24 @@ jobs:
 
       - name: Scan using SonarQube
         if: ${{ steps.validate-sonar.outcome == 'success' }}
-        uses: SonarSource/sonarqube-scan-action@v7.1.0
         id: sonar-scan
         continue-on-error: true
-        with:
-          projectBaseDir: ${{ inputs.service_path }}
-          args: >-
-            -Dsonar.projectKey=${{ inputs.sonar_project_key || vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.projectName=${{ inputs.service_name }}
         env:
           SONAR_TOKEN: ${{ secrets[inputs.sonar_token_secret_name] || secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_PROJECT_KEY: ${{ inputs.sonar_project_key || vars.SONAR_PROJECT_KEY || secrets.SONAR_PROJECT_KEY }}
+          SERVICE_NAME: ${{ inputs.service_name }}
+          SERVICE_PATH: ${{ inputs.service_path }}
+          SCANNER_VERSION: 5.0.1.3006
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SCANNER_VERSION}-linux.zip" \
+            --output sonar-scanner-cli.zip
+          unzip -q sonar-scanner-cli.zip
+          "./sonar-scanner-${SCANNER_VERSION}-linux/bin/sonar-scanner" \
+            -Dsonar.projectBaseDir="$SERVICE_PATH" \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.projectName="$SERVICE_NAME"
 
       - name: Check SonarQube Quality Gate
         id: qg
