@@ -1,4 +1,4 @@
-name: job-service Docker Image Pipeline
+name: matching-service Docker Image Pipeline
 
 on:
   pull_request:
