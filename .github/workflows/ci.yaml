@@ -87,6 +87,7 @@ jobs:
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
             -Dsonar.projectName=${{ env.SERVICE_NAME }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.exclusions=**/.github/**/*
   snyk_scan:
     name: snyk-scan / snyk
     runs-on: ubuntu-latest
