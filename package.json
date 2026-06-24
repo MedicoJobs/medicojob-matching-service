@@ -9,6 +9,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^4.22.1",
-    "mongoose": "^9.5.0"
+    "express-prom-bundle": "^8.0.0",
+    "mongoose": "^9.5.0",
+    "prom-client": "^15.1.3"
   }
 }
